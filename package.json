@@ -1,0 +1,31 @@
+{
+  "name": "@boredland/action-coolify",
+  "description": "A GitHub Action to deploy to coolify.",
+  "version": "1.0.0",
+  "private": false,
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest",
+    "format": "biome check --write",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "Jonas Strassel <info@jonas-strassel.de>",
+  "license": "MIT",
+  "devDependencies": {
+    "@actions/core": "^1.11.1",
+    "@biomejs/biome": "^1.9.3",
+    "@types/node": "^22.7.5",
+    "lefthook": "^1.7.18",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.3"
+  },
+  "tsup": {
+    "entry": ["src/action.ts"],
+    "splitting": false,
+    "sourcemap": false,
+    "clean": true,
+    "dts": true,
+    "format": ["cjs"]
+  }
+}

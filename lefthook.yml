@@ -1,0 +1,20 @@
+prepare-commit-msg:
+  commands:
+    gitmoji:
+      only:
+        - run: command -v gitmoji
+      interactive: true
+      run: gitmoji --hook {1} {2}
+      
+pre-commit:
+  parallel: false
+  commands:
+    build:
+      glob: "*.{ts,package-lock.json}"
+      run: npm run build && git add dist/*
+      # yes we're actually committing the build output, because github actions works like that
+      stage_fixed: true
+    format:
+      glob: "*.{ts,json,md}"
+      run: npm run format
+      stage_fixed: true
