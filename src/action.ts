@@ -1,4 +1,4 @@
-import { debug, getInput, setFailed } from "@actions/core";
+import { debug, getInput, info, setFailed } from "@actions/core";
 
 const waitTimeSeconds = Number.parseInt(getInput("wait", { required: false }));
 const apiKey = getInput("api-key", { required: true });
@@ -96,7 +96,7 @@ void (async () => {
   );
 
   const status = Object.fromEntries(
-    deploymentUUIDs.map((uuid) => [uuid, "pending"]),
+    deploymentUUIDs.map((uuid) => [uuid, "queued"]),
   );
   const endTime = Date.now() + waitTimeSeconds * 1000;
   // Pause between attempts
@@ -109,10 +109,17 @@ void (async () => {
     }
 
     for (const uuid of deploymentUUIDs.filter(
-      (uuid) => status[uuid] !== "finished",
+      (uuid) => status[uuid] !== "finished" && status[uuid] !== "failed",
     )) {
-      status[uuid] = await getDeploymentStatus(uuid);
-      debug(`Deployment ${uuid} status: ${status[uuid]}`);
+      const nextStatus = await getDeploymentStatus(uuid);
+      if (nextStatus !== status[uuid]) {
+        info(`Deployment ${uuid} status: ${nextStatus}`);
+        status[uuid] = nextStatus;
+      }
+
+      if (status[uuid] === "failed") {
+        setFailed(`Deployment ${uuid} failed`);
+      }
     }
 
     await new Promise((resolve) => setTimeout(resolve, pause));
