@@ -83,9 +83,10 @@ const getDeploymentStatus = async (uuid: string) => {
 
   const response = (await result.json()) as {
     status: "in_progress" | "finished" | "queued" | "failed";
+    application_name: string;
   };
 
-  return response.status;
+  return response;
 };
 
 void (async () => {
@@ -99,7 +100,7 @@ void (async () => {
     deploymentUUIDs.map((uuid) => [uuid, "queued"]),
   );
   const endTime = Date.now() + waitTimeSeconds * 1000;
-  // Pause between attempts
+  // Pause between updates
   const pause = 5000;
 
   while (Object.values(status).some((s) => s !== "finished")) {
@@ -112,9 +113,11 @@ void (async () => {
       (uuid) => status[uuid] !== "finished" && status[uuid] !== "failed",
     )) {
       const nextStatus = await getDeploymentStatus(uuid);
-      if (nextStatus !== status[uuid]) {
-        info(`Deployment ${uuid} status: ${nextStatus}`);
-        status[uuid] = nextStatus;
+      if (nextStatus.status !== status[uuid]) {
+        info(
+          `Deployment ${nextStatus.application_name} (${uuid}) status: ${nextStatus}`,
+        );
+        status[uuid] = nextStatus.status;
       }
 
       if (status[uuid] === "failed") {

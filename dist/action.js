@@ -19916,7 +19916,7 @@ var getDeploymentStatus = async (uuid2) => {
     process.exit(1);
   }
   const response = await result.json();
-  return response.status;
+  return response;
 };
 void (async () => {
   const deployments = await deploy();
@@ -19937,9 +19937,9 @@ void (async () => {
       (uuid3) => status[uuid3] !== "finished" && status[uuid3] !== "failed"
     )) {
       const nextStatus = await getDeploymentStatus(uuid2);
-      if (nextStatus !== status[uuid2]) {
-        (0, import_core.info)(`Deployment ${uuid2} status: ${nextStatus}`);
-        status[uuid2] = nextStatus;
+      if (nextStatus.status !== status[uuid2]) {
+        (0, import_core.info)(`Deployment ${nextStatus.application_name} (${uuid2}) status: ${nextStatus}`);
+        status[uuid2] = nextStatus.status;
       }
       if (status[uuid2] === "failed") {
         (0, import_core.setFailed)(`Deployment ${uuid2} failed`);
