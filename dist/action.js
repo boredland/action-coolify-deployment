@@ -19938,7 +19938,9 @@ void (async () => {
     )) {
       const nextStatus = await getDeploymentStatus(uuid2);
       if (nextStatus.status !== status[uuid2]) {
-        (0, import_core.info)(`Deployment ${nextStatus.application_name} (${uuid2}) status: ${nextStatus}`);
+        (0, import_core.info)(
+          `Deployment ${nextStatus.application_name} (${uuid2}) status: ${nextStatus.status}`
+        );
         status[uuid2] = nextStatus.status;
       }
       if (status[uuid2] === "failed") {

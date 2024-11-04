@@ -115,7 +115,7 @@ void (async () => {
       const nextStatus = await getDeploymentStatus(uuid);
       if (nextStatus.status !== status[uuid]) {
         info(
-          `Deployment ${nextStatus.application_name} (${uuid}) status: ${nextStatus}`,
+          `Deployment ${nextStatus.application_name} (${uuid}) status: ${nextStatus.status}`,
         );
         status[uuid] = nextStatus.status;
       }
