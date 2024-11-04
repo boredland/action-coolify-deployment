@@ -19876,6 +19876,72 @@ if (!tag && !uuid) {
   process.exit(1);
 }
 var deployPath = `${coolifyUrl}/api/v1/deploy`;
+var deploymentPath = (uuid2) => `${coolifyUrl}/api/v1/deployments/${uuid2}`;
+var deploy = async () => {
+  if (tag) (0, import_core.debug)(`Deploying tag: ${tag}`);
+  if (uuid) (0, import_core.debug)(`Deploying uuid: ${uuid}`);
+  const searchParams = new URLSearchParams({
+    ...tag ? { tag } : {},
+    ...uuid ? { uuid } : {},
+    force
+  });
+  const url = `${deployPath}?${searchParams.toString()}`;
+  const result = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`
+    }
+  });
+  if (!result.ok) {
+    (0, import_core.setFailed)(`Failed to deploy (${result.status}): ${result.statusText}`);
+    process.exit(1);
+  }
+  const response = await result.json();
+  (0, import_core.debug)(response.message.join("\n"));
+  return response.details;
+};
+var getDeploymentStatus = async (uuid2) => {
+  const result = await fetch(deploymentPath(uuid2), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`
+    }
+  });
+  if (!result.ok) {
+    (0, import_core.setFailed)(
+      `Failed to get deployment status for deployment '${uuid2}' (${result.status}): ${result.statusText}`
+    );
+    process.exit(1);
+  }
+  const response = await result.json();
+  return response.status;
+};
+void (async () => {
+  const deployments = await deploy();
+  const deploymentUUIDs = deployments.map(
+    (deployment) => deployment.deployment_uuid
+  );
+  const status = Object.fromEntries(
+    deploymentUUIDs.map((uuid2) => [uuid2, "pending"])
+  );
+  const endTime = Date.now() + waitTimeSeconds * 1e3;
+  const pause = 5e3;
+  while (Object.values(status).some((s) => s !== "finished")) {
+    if (Date.now() > endTime) {
+      (0, import_core.setFailed)("Timeout reached");
+      process.exit(1);
+    }
+    for (const uuid2 of deploymentUUIDs.filter(
+      (uuid3) => status[uuid3] !== "finished"
+    )) {
+      status[uuid2] = await getDeploymentStatus(uuid2);
+      (0, import_core.debug)(`Deployment ${uuid2} status: ${status[uuid2]}`);
+    }
+    await new Promise((resolve) => setTimeout(resolve, pause));
+  }
+})();
 /*! Bundled license information:
 
 undici/lib/fetch/body.js:

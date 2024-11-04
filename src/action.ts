@@ -53,14 +53,16 @@ const deploy = async () => {
   }
 
   const response = (await result.json()) as {
-    deployments: {
-      message: string;
+    details: {
       resource_uuid: string;
       deployment_uuid: string;
     }[];
+    message: string[];
   };
 
-  return response.deployments;
+  debug(response.message.join("\n"));
+
+  return response.details;
 };
 
 const getDeploymentStatus = async (uuid: string) => {
@@ -80,7 +82,7 @@ const getDeploymentStatus = async (uuid: string) => {
   }
 
   const response = (await result.json()) as {
-    status: string;
+    status: "in_progress" | "finished" | "queued" | "failed";
   };
 
   return response.status;
@@ -115,4 +117,4 @@ void (async () => {
 
     await new Promise((resolve) => setTimeout(resolve, pause));
   }
-});
+})();
