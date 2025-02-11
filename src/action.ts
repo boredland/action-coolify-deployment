@@ -60,7 +60,9 @@ const deploy = async () => {
     message: string[];
   };
 
-  debug(response.message.join("\n"));
+  if (Array.isArray(response.message) && response.message.length > 0) {
+    debug(response.message.join("\n"));
+  }
 
   return response.details;
 };

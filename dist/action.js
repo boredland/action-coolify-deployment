@@ -19898,7 +19898,9 @@ var deploy = async () => {
     process.exit(1);
   }
   const response = await result.json();
-  (0, import_core.debug)(response.message.join("\n"));
+  if (Array.isArray(response.message) && response.message.length > 0) {
+    (0, import_core.debug)(response.message.join("\n"));
+  }
   return response.details;
 };
 var getDeploymentStatus = async (uuid2) => {
