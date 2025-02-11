@@ -1,8 +1,18 @@
 import { debug, getInput, info, setFailed } from "@actions/core";
+import createClient from "openapi-fetch";
+import type { paths } from "./schema";
 
 const waitTimeSeconds = Number.parseInt(getInput("wait", { required: false }));
 const apiKey = getInput("api-key", { required: true });
 const coolifyUrl = getInput("coolify-url", { required: false });
+const baseUrl = new URL("/api/v1", coolifyUrl).toString();
+const coolifyClient = createClient<paths>({
+  baseUrl,
+  headers: {
+    Authorization: `Bearer ${apiKey}`,
+    "Content-Type": "application/json",
+  },
+});
 
 let tag: string | undefined = getInput("tag", { required: false });
 if (tag === "") {
@@ -14,81 +24,44 @@ if (uuid === "") {
   uuid = undefined;
 }
 
-let force: string = getInput("force", { required: false });
-if (force === "") {
-  force = "false";
-}
+const force: boolean = getInput("force", { required: false }) === "true";
 
 if (!tag && !uuid) {
   setFailed("Either tag or uuid must be provided");
   process.exit(1);
 }
 
-const deployPath = `${coolifyUrl}/api/v1/deploy`;
-const deploymentPath = (uuid: string) =>
-  `${coolifyUrl}/api/v1/deployments/${uuid}`;
-
 const deploy = async () => {
   if (tag) debug(`Deploying tag: ${tag}`);
   if (uuid) debug(`Deploying uuid: ${uuid}`);
 
-  const searchParams = new URLSearchParams({
-    ...(tag ? { tag } : {}),
-    ...(uuid ? { uuid } : {}),
-    force,
-  });
-  const url = `${deployPath}?${searchParams.toString()}`;
-
-  const result = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
+  const result = await coolifyClient.GET("/deploy", {
+    params: { query: { tag, uuid, force } },
   });
 
-  if (!result.ok) {
-    setFailed(`Failed to deploy (${result.status}): ${result.statusText}`);
+  if (!result.data) {
+    setFailed(`Failed to deploy: ${result.error.message}`);
     process.exit(1);
   }
 
-  const response = (await result.json()) as {
-    details: {
-      resource_uuid: string;
-      deployment_uuid: string;
-    }[];
-    message: string[];
-  };
+  debug(JSON.stringify(result.data));
 
-  if (Array.isArray(response.message) && response.message.length > 0) {
-    debug(response.message.join("\n"));
-  }
-
-  return response.details;
+  return result.data.deployments ?? [];
 };
 
 const getDeploymentStatus = async (uuid: string) => {
-  const result = await fetch(deploymentPath(uuid), {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
+  const result = await coolifyClient.GET("/deployments/{uuid}", {
+    params: { path: { uuid } },
   });
 
-  if (!result.ok) {
+  if (!result.data) {
     setFailed(
-      `Failed to get deployment status for deployment '${uuid}' (${result.status}): ${result.statusText}`,
+      `Failed to get deployment status for deployment '${uuid}': ${result.error.message}`,
     );
     process.exit(1);
   }
 
-  const response = (await result.json()) as {
-    status: "in_progress" | "finished" | "queued" | "failed";
-    application_name: string;
-  };
-
-  return response;
+  return result.data;
 };
 
 void (async () => {
@@ -111,7 +84,7 @@ void (async () => {
       process.exit(1);
     }
 
-    for (const uuid of deploymentUUIDs.filter(
+    for (const uuid of Object.keys(status).filter(
       (uuid) => status[uuid] !== "finished" && status[uuid] !== "failed",
     )) {
       const nextStatus = await getDeploymentStatus(uuid);
@@ -119,7 +92,7 @@ void (async () => {
         info(
           `Deployment ${nextStatus.application_name} (${uuid}) status: ${nextStatus.status}`,
         );
-        status[uuid] = nextStatus.status;
+        status[uuid] = nextStatus.status ?? "queued";
       }
 
       if (status[uuid] === "failed") {

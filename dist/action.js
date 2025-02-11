@@ -5111,7 +5111,7 @@ var require_formdata = __commonJS({
     var { webidl } = require_webidl();
     var { Blob: Blob2, File: NativeFile } = require("buffer");
     var File = NativeFile ?? UndiciFile;
-    var FormData = class _FormData {
+    var FormData2 = class _FormData {
       constructor(form) {
         if (form !== void 0) {
           throw webidl.errors.conversionFailed({
@@ -5228,8 +5228,8 @@ var require_formdata = __commonJS({
         }
       }
     };
-    FormData.prototype[Symbol.iterator] = FormData.prototype.entries;
-    Object.defineProperties(FormData.prototype, {
+    FormData2.prototype[Symbol.iterator] = FormData2.prototype.entries;
+    Object.defineProperties(FormData2.prototype, {
       [Symbol.toStringTag]: {
         value: "FormData",
         configurable: true
@@ -5253,7 +5253,7 @@ var require_formdata = __commonJS({
       }
       return { name, value };
     }
-    module2.exports = { FormData };
+    module2.exports = { FormData: FormData2 };
   }
 });
 
@@ -5271,7 +5271,7 @@ var require_body = __commonJS({
       createDeferredPromise,
       fullyReadBody
     } = require_util2();
-    var { FormData } = require_formdata();
+    var { FormData: FormData2 } = require_formdata();
     var { kState } = require_symbols2();
     var { webidl } = require_webidl();
     var { DOMException: DOMException2, structuredClone } = require_constants2();
@@ -5493,7 +5493,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
           if (/multipart\/form-data/.test(contentType)) {
             const headers = {};
             for (const [key, value] of this.headers) headers[key.toLowerCase()] = value;
-            const responseFormData = new FormData();
+            const responseFormData = new FormData2();
             let busboy;
             try {
               busboy = new Busboy({
@@ -5553,7 +5553,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
             } catch (err) {
               throw Object.assign(new TypeError(), { cause: err });
             }
-            const formData = new FormData();
+            const formData = new FormData2();
             for (const [name, value] of entries) {
               formData.append(name, value);
             }
@@ -11696,7 +11696,7 @@ var require_headers = __commonJS({
         return headers;
       }
     };
-    var Headers = class _Headers {
+    var Headers2 = class _Headers {
       constructor(init = void 0) {
         if (init === kConstruct) {
           return;
@@ -11891,8 +11891,8 @@ var require_headers = __commonJS({
         return this[kHeadersList];
       }
     };
-    Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
-    Object.defineProperties(Headers.prototype, {
+    Headers2.prototype[Symbol.iterator] = Headers2.prototype.entries;
+    Object.defineProperties(Headers2.prototype, {
       append: kEnumerableProperty,
       delete: kEnumerableProperty,
       get: kEnumerableProperty,
@@ -11924,7 +11924,7 @@ var require_headers = __commonJS({
     };
     module2.exports = {
       fill,
-      Headers,
+      Headers: Headers2,
       HeadersList
     };
   }
@@ -11934,7 +11934,7 @@ var require_headers = __commonJS({
 var require_response = __commonJS({
   "node_modules/undici/lib/fetch/response.js"(exports2, module2) {
     "use strict";
-    var { Headers, HeadersList, fill } = require_headers();
+    var { Headers: Headers2, HeadersList, fill } = require_headers();
     var { extractBody, cloneBody, mixinBody } = require_body();
     var util = require_util();
     var { kEnumerableProperty } = util;
@@ -11954,7 +11954,7 @@ var require_response = __commonJS({
     } = require_constants2();
     var { kState, kHeaders, kGuard, kRealm } = require_symbols2();
     var { webidl } = require_webidl();
-    var { FormData } = require_formdata();
+    var { FormData: FormData2 } = require_formdata();
     var { getGlobalOrigin } = require_global();
     var { URLSerializer } = require_dataURL();
     var { kHeadersList, kConstruct } = require_symbols();
@@ -11962,7 +11962,7 @@ var require_response = __commonJS({
     var { types } = require("util");
     var ReadableStream = globalThis.ReadableStream || require("stream/web").ReadableStream;
     var textEncoder = new TextEncoder("utf-8");
-    var Response = class _Response {
+    var Response2 = class _Response {
       // Creates network error Response.
       static error() {
         const relevantRealm = { settingsObject: {} };
@@ -12026,7 +12026,7 @@ var require_response = __commonJS({
         init = webidl.converters.ResponseInit(init);
         this[kRealm] = { settingsObject: {} };
         this[kState] = makeResponse({});
-        this[kHeaders] = new Headers(kConstruct);
+        this[kHeaders] = new Headers2(kConstruct);
         this[kHeaders][kGuard] = "response";
         this[kHeaders][kHeadersList] = this[kState].headersList;
         this[kHeaders][kRealm] = this[kRealm];
@@ -12104,8 +12104,8 @@ var require_response = __commonJS({
         return clonedResponseObject;
       }
     };
-    mixinBody(Response);
-    Object.defineProperties(Response.prototype, {
+    mixinBody(Response2);
+    Object.defineProperties(Response2.prototype, {
       type: kEnumerableProperty,
       url: kEnumerableProperty,
       status: kEnumerableProperty,
@@ -12121,7 +12121,7 @@ var require_response = __commonJS({
         configurable: true
       }
     });
-    Object.defineProperties(Response, {
+    Object.defineProperties(Response2, {
       json: kEnumerableProperty,
       redirect: kEnumerableProperty,
       error: kEnumerableProperty
@@ -12250,7 +12250,7 @@ var require_response = __commonJS({
       ReadableStream
     );
     webidl.converters.FormData = webidl.interfaceConverter(
-      FormData
+      FormData2
     );
     webidl.converters.URLSearchParams = webidl.interfaceConverter(
       URLSearchParams
@@ -12303,7 +12303,7 @@ var require_response = __commonJS({
       makeResponse,
       makeAppropriateNetworkError,
       filterResponse,
-      Response,
+      Response: Response2,
       cloneResponse
     };
   }
@@ -12314,7 +12314,7 @@ var require_request2 = __commonJS({
   "node_modules/undici/lib/fetch/request.js"(exports2, module2) {
     "use strict";
     var { extractBody, mixinBody, cloneBody } = require_body();
-    var { Headers, fill: fillHeaders, HeadersList } = require_headers();
+    var { Headers: Headers2, fill: fillHeaders, HeadersList } = require_headers();
     var { FinalizationRegistry } = require_dispatcher_weakref()();
     var util = require_util();
     var {
@@ -12367,12 +12367,12 @@ var require_request2 = __commonJS({
         };
         let request = null;
         let fallbackMode = null;
-        const baseUrl = this[kRealm].settingsObject.baseUrl;
+        const baseUrl2 = this[kRealm].settingsObject.baseUrl;
         let signal = null;
         if (typeof input === "string") {
           let parsedURL;
           try {
-            parsedURL = new URL(input, baseUrl);
+            parsedURL = new URL(input, baseUrl2);
           } catch (err) {
             throw new TypeError("Failed to parse URL from " + input, { cause: err });
           }
@@ -12462,7 +12462,7 @@ var require_request2 = __commonJS({
           } else {
             let parsedReferrer;
             try {
-              parsedReferrer = new URL(referrer, baseUrl);
+              parsedReferrer = new URL(referrer, baseUrl2);
             } catch (err) {
               throw new TypeError(`Referrer "${referrer}" is not a valid URL.`, { cause: err });
             }
@@ -12558,7 +12558,7 @@ var require_request2 = __commonJS({
             requestFinalizer.register(ac, { signal, abort });
           }
         }
-        this[kHeaders] = new Headers(kConstruct);
+        this[kHeaders] = new Headers2(kConstruct);
         this[kHeaders][kHeadersList] = request.headersList;
         this[kHeaders][kGuard] = "request";
         this[kHeaders][kRealm] = this[kRealm];
@@ -12757,7 +12757,7 @@ var require_request2 = __commonJS({
         const clonedRequestObject = new _Request(kConstruct);
         clonedRequestObject[kState] = clonedRequest;
         clonedRequestObject[kRealm] = this[kRealm];
-        clonedRequestObject[kHeaders] = new Headers(kConstruct);
+        clonedRequestObject[kHeaders] = new Headers2(kConstruct);
         clonedRequestObject[kHeaders][kHeadersList] = clonedRequest.headersList;
         clonedRequestObject[kHeaders][kGuard] = this[kHeaders][kGuard];
         clonedRequestObject[kHeaders][kRealm] = this[kHeaders][kRealm];
@@ -12953,13 +12953,13 @@ var require_fetch = __commonJS({
   "node_modules/undici/lib/fetch/index.js"(exports2, module2) {
     "use strict";
     var {
-      Response,
+      Response: Response2,
       makeNetworkError,
       makeAppropriateNetworkError,
       filterResponse,
       makeResponse
     } = require_response();
-    var { Headers } = require_headers();
+    var { Headers: Headers2 } = require_headers();
     var { Request, makeRequest } = require_request2();
     var zlib = require("zlib");
     var {
@@ -13046,7 +13046,7 @@ var require_fetch = __commonJS({
         this.emit("terminated", error);
       }
     };
-    function fetch2(input, init = {}) {
+    function fetch(input, init = {}) {
       webidl.argumentLengthCheck(arguments, 1, { header: "globalThis.fetch" });
       const p = createDeferredPromise();
       let requestObject;
@@ -13093,7 +13093,7 @@ var require_fetch = __commonJS({
           );
           return Promise.resolve();
         }
-        responseObject = new Response();
+        responseObject = new Response2();
         responseObject[kState] = response;
         responseObject[kRealm] = relevantRealm;
         responseObject[kHeaders][kHeadersList] = response.headersList;
@@ -13872,7 +13872,7 @@ var require_fetch = __commonJS({
               }
               let codings = [];
               let location = "";
-              const headers = new Headers();
+              const headers = new Headers2();
               if (Array.isArray(headersList)) {
                 for (let n = 0; n < headersList.length; n += 2) {
                   const key = headersList[n + 0].toString("latin1");
@@ -13957,7 +13957,7 @@ var require_fetch = __commonJS({
               if (status !== 101) {
                 return;
               }
-              const headers = new Headers();
+              const headers = new Headers2();
               for (let n = 0; n < headersList.length; n += 2) {
                 const key = headersList[n + 0].toString("latin1");
                 const val = headersList[n + 1].toString("latin1");
@@ -13976,7 +13976,7 @@ var require_fetch = __commonJS({
       }
     }
     module2.exports = {
-      fetch: fetch2,
+      fetch,
       Fetch,
       fetching,
       finalizeAndReportTiming
@@ -14850,7 +14850,7 @@ var require_cache = __commonJS({
     var { kEnumerableProperty, isDisturbed } = require_util();
     var { kHeadersList } = require_symbols();
     var { webidl } = require_webidl();
-    var { Response, cloneResponse } = require_response();
+    var { Response: Response2, cloneResponse } = require_response();
     var { Request } = require_request2();
     var { kState, kHeaders, kGuard, kRealm } = require_symbols2();
     var { fetching } = require_fetch();
@@ -14910,7 +14910,7 @@ var require_cache = __commonJS({
         }
         const responseList = [];
         for (const response of responses) {
-          const responseObject = new Response(response.body?.source ?? null);
+          const responseObject = new Response2(response.body?.source ?? null);
           const body = responseObject[kState].body;
           responseObject[kState] = response;
           responseObject[kState].body = body;
@@ -15368,7 +15368,7 @@ var require_cache = __commonJS({
         converter: webidl.converters.DOMString
       }
     ]);
-    webidl.converters.Response = webidl.interfaceConverter(Response);
+    webidl.converters.Response = webidl.interfaceConverter(Response2);
     webidl.converters["sequence<RequestInfo>"] = webidl.sequenceConverter(
       webidl.converters.RequestInfo
     );
@@ -15806,10 +15806,10 @@ var require_cookies = __commonJS({
     var { parseSetCookie } = require_parse();
     var { stringify, getHeadersList } = require_util6();
     var { webidl } = require_webidl();
-    var { Headers } = require_headers();
+    var { Headers: Headers2 } = require_headers();
     function getCookies(headers) {
       webidl.argumentLengthCheck(arguments, 1, { header: "getCookies" });
-      webidl.brandCheck(headers, Headers, { strict: false });
+      webidl.brandCheck(headers, Headers2, { strict: false });
       const cookie = headers.get("cookie");
       const out = {};
       if (!cookie) {
@@ -15823,7 +15823,7 @@ var require_cookies = __commonJS({
     }
     function deleteCookie(headers, name, attributes) {
       webidl.argumentLengthCheck(arguments, 2, { header: "deleteCookie" });
-      webidl.brandCheck(headers, Headers, { strict: false });
+      webidl.brandCheck(headers, Headers2, { strict: false });
       name = webidl.converters.DOMString(name);
       attributes = webidl.converters.DeleteCookieAttributes(attributes);
       setCookie(headers, {
@@ -15835,7 +15835,7 @@ var require_cookies = __commonJS({
     }
     function getSetCookies(headers) {
       webidl.argumentLengthCheck(arguments, 1, { header: "getSetCookies" });
-      webidl.brandCheck(headers, Headers, { strict: false });
+      webidl.brandCheck(headers, Headers2, { strict: false });
       const cookies = getHeadersList(headers).cookies;
       if (!cookies) {
         return [];
@@ -15844,7 +15844,7 @@ var require_cookies = __commonJS({
     }
     function setCookie(headers, cookie) {
       webidl.argumentLengthCheck(arguments, 2, { header: "setCookie" });
-      webidl.brandCheck(headers, Headers, { strict: false });
+      webidl.brandCheck(headers, Headers2, { strict: false });
       cookie = webidl.converters.Cookie(cookie);
       const str = stringify(cookie);
       if (str) {
@@ -16346,7 +16346,7 @@ var require_connection = __commonJS({
     var { CloseEvent } = require_events();
     var { makeRequest } = require_request2();
     var { fetching } = require_fetch();
-    var { Headers } = require_headers();
+    var { Headers: Headers2 } = require_headers();
     var { getGlobalDispatcher } = require_global2();
     var { kHeadersList } = require_symbols();
     var channels = {};
@@ -16371,7 +16371,7 @@ var require_connection = __commonJS({
         redirect: "error"
       });
       if (options.headers) {
-        const headersList = new Headers(options.headers)[kHeadersList];
+        const headersList = new Headers2(options.headers)[kHeadersList];
         request.headersList = headersList;
       }
       const keyValue = crypto.randomBytes(16).toString("base64");
@@ -17278,7 +17278,7 @@ var require_undici = __commonJS({
     module2.exports.getGlobalDispatcher = getGlobalDispatcher;
     if (util.nodeMajor > 16 || util.nodeMajor === 16 && util.nodeMinor >= 8) {
       let fetchImpl = null;
-      module2.exports.fetch = async function fetch2(resource) {
+      module2.exports.fetch = async function fetch(resource) {
         if (!fetchImpl) {
           fetchImpl = require_fetch().fetch;
         }
@@ -17425,11 +17425,11 @@ var require_lib = __commonJS({
       HttpCodes2[HttpCodes2["ServiceUnavailable"] = 503] = "ServiceUnavailable";
       HttpCodes2[HttpCodes2["GatewayTimeout"] = 504] = "GatewayTimeout";
     })(HttpCodes || (exports2.HttpCodes = HttpCodes = {}));
-    var Headers;
-    (function(Headers2) {
-      Headers2["Accept"] = "accept";
-      Headers2["ContentType"] = "content-type";
-    })(Headers || (exports2.Headers = Headers = {}));
+    var Headers2;
+    (function(Headers3) {
+      Headers3["Accept"] = "accept";
+      Headers3["ContentType"] = "content-type";
+    })(Headers2 || (exports2.Headers = Headers2 = {}));
     var MediaTypes;
     (function(MediaTypes2) {
       MediaTypes2["ApplicationJson"] = "application/json";
@@ -17584,7 +17584,7 @@ var require_lib = __commonJS({
        */
       getJson(requestUrl, additionalHeaders = {}) {
         return __awaiter(this, void 0, void 0, function* () {
-          additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
+          additionalHeaders[Headers2.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers2.Accept, MediaTypes.ApplicationJson);
           const res = yield this.get(requestUrl, additionalHeaders);
           return this._processResponse(res, this.requestOptions);
         });
@@ -17592,8 +17592,8 @@ var require_lib = __commonJS({
       postJson(requestUrl, obj, additionalHeaders = {}) {
         return __awaiter(this, void 0, void 0, function* () {
           const data = JSON.stringify(obj, null, 2);
-          additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
-          additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
+          additionalHeaders[Headers2.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers2.Accept, MediaTypes.ApplicationJson);
+          additionalHeaders[Headers2.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers2.ContentType, MediaTypes.ApplicationJson);
           const res = yield this.post(requestUrl, data, additionalHeaders);
           return this._processResponse(res, this.requestOptions);
         });
@@ -17601,8 +17601,8 @@ var require_lib = __commonJS({
       putJson(requestUrl, obj, additionalHeaders = {}) {
         return __awaiter(this, void 0, void 0, function* () {
           const data = JSON.stringify(obj, null, 2);
-          additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
-          additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
+          additionalHeaders[Headers2.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers2.Accept, MediaTypes.ApplicationJson);
+          additionalHeaders[Headers2.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers2.ContentType, MediaTypes.ApplicationJson);
           const res = yield this.put(requestUrl, data, additionalHeaders);
           return this._processResponse(res, this.requestOptions);
         });
@@ -17610,8 +17610,8 @@ var require_lib = __commonJS({
       patchJson(requestUrl, obj, additionalHeaders = {}) {
         return __awaiter(this, void 0, void 0, function* () {
           const data = JSON.stringify(obj, null, 2);
-          additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
-          additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
+          additionalHeaders[Headers2.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers2.Accept, MediaTypes.ApplicationJson);
+          additionalHeaders[Headers2.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers2.ContentType, MediaTypes.ApplicationJson);
           const res = yield this.patch(requestUrl, data, additionalHeaders);
           return this._processResponse(res, this.requestOptions);
         });
@@ -19856,9 +19856,454 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
 
 // src/action.ts
 var import_core = __toESM(require_core());
+
+// node_modules/openapi-fetch/dist/index.js
+var PATH_PARAM_RE = /\{[^{}]+\}/g;
+var supportsRequestInitExt = () => {
+  return typeof process === "object" && Number.parseInt(process?.versions?.node?.substring(0, 2)) >= 18 && process.versions.undici;
+};
+function randomID() {
+  return Math.random().toString(36).slice(2, 11);
+}
+function createClient(clientOptions) {
+  let {
+    baseUrl: baseUrl2 = "",
+    Request: CustomRequest = globalThis.Request,
+    fetch: baseFetch = globalThis.fetch,
+    querySerializer: globalQuerySerializer,
+    bodySerializer: globalBodySerializer,
+    headers: baseHeaders,
+    requestInitExt = void 0,
+    ...baseOptions
+  } = { ...clientOptions };
+  requestInitExt = supportsRequestInitExt() ? requestInitExt : void 0;
+  baseUrl2 = removeTrailingSlash(baseUrl2);
+  const middlewares = [];
+  async function coreFetch(schemaPath, fetchOptions) {
+    const {
+      baseUrl: localBaseUrl,
+      fetch = baseFetch,
+      Request = CustomRequest,
+      headers,
+      params = {},
+      parseAs = "json",
+      querySerializer: requestQuerySerializer,
+      bodySerializer = globalBodySerializer ?? defaultBodySerializer,
+      body,
+      ...init
+    } = fetchOptions || {};
+    if (localBaseUrl) {
+      baseUrl2 = removeTrailingSlash(localBaseUrl);
+    }
+    let querySerializer = typeof globalQuerySerializer === "function" ? globalQuerySerializer : createQuerySerializer(globalQuerySerializer);
+    if (requestQuerySerializer) {
+      querySerializer = typeof requestQuerySerializer === "function" ? requestQuerySerializer : createQuerySerializer({
+        ...typeof globalQuerySerializer === "object" ? globalQuerySerializer : {},
+        ...requestQuerySerializer
+      });
+    }
+    const serializedBody = body === void 0 ? void 0 : bodySerializer(body);
+    const defaultHeaders = (
+      // with no body, we should not to set Content-Type
+      serializedBody === void 0 || // if serialized body is FormData; browser will correctly set Content-Type & boundary expression
+      serializedBody instanceof FormData ? {} : {
+        "Content-Type": "application/json"
+      }
+    );
+    const requestInit = {
+      redirect: "follow",
+      ...baseOptions,
+      ...init,
+      body: serializedBody,
+      headers: mergeHeaders(defaultHeaders, baseHeaders, headers, params.header)
+    };
+    let id;
+    let options;
+    let request = new CustomRequest(createFinalURL(schemaPath, { baseUrl: baseUrl2, params, querySerializer }), requestInit);
+    for (const key in init) {
+      if (!(key in request)) {
+        request[key] = init[key];
+      }
+    }
+    if (middlewares.length) {
+      id = randomID();
+      options = Object.freeze({
+        baseUrl: baseUrl2,
+        fetch,
+        parseAs,
+        querySerializer,
+        bodySerializer
+      });
+      for (const m of middlewares) {
+        if (m && typeof m === "object" && typeof m.onRequest === "function") {
+          const result = await m.onRequest({
+            request,
+            schemaPath,
+            params,
+            options,
+            id
+          });
+          if (result) {
+            if (!(result instanceof CustomRequest)) {
+              throw new Error("onRequest: must return new Request() when modifying the request");
+            }
+            request = result;
+          }
+        }
+      }
+    }
+    let response;
+    try {
+      response = await fetch(request, requestInitExt);
+    } catch (error2) {
+      let errorAfterMiddleware = error2;
+      if (middlewares.length) {
+        for (let i = middlewares.length - 1; i >= 0; i--) {
+          const m = middlewares[i];
+          if (m && typeof m === "object" && typeof m.onError === "function") {
+            const result = await m.onError({
+              request,
+              error: errorAfterMiddleware,
+              schemaPath,
+              params,
+              options,
+              id
+            });
+            if (result) {
+              if (result instanceof Response) {
+                errorAfterMiddleware = void 0;
+                response = result;
+                break;
+              }
+              if (result instanceof Error) {
+                errorAfterMiddleware = result;
+                continue;
+              }
+              throw new Error("onError: must return new Response() or instance of Error");
+            }
+          }
+        }
+      }
+      if (errorAfterMiddleware) {
+        throw errorAfterMiddleware;
+      }
+    }
+    if (middlewares.length) {
+      for (let i = middlewares.length - 1; i >= 0; i--) {
+        const m = middlewares[i];
+        if (m && typeof m === "object" && typeof m.onResponse === "function") {
+          const result = await m.onResponse({
+            request,
+            response,
+            schemaPath,
+            params,
+            options,
+            id
+          });
+          if (result) {
+            if (!(result instanceof Response)) {
+              throw new Error("onResponse: must return new Response() when modifying the response");
+            }
+            response = result;
+          }
+        }
+      }
+    }
+    if (response.status === 204 || response.headers.get("Content-Length") === "0") {
+      return response.ok ? { data: void 0, response } : { error: void 0, response };
+    }
+    if (response.ok) {
+      if (parseAs === "stream") {
+        return { data: response.body, response };
+      }
+      return { data: await response[parseAs](), response };
+    }
+    let error = await response.text();
+    try {
+      error = JSON.parse(error);
+    } catch {
+    }
+    return { error, response };
+  }
+  return {
+    request(method, url, init) {
+      return coreFetch(url, { ...init, method: method.toUpperCase() });
+    },
+    /** Call a GET endpoint */
+    GET(url, init) {
+      return coreFetch(url, { ...init, method: "GET" });
+    },
+    /** Call a PUT endpoint */
+    PUT(url, init) {
+      return coreFetch(url, { ...init, method: "PUT" });
+    },
+    /** Call a POST endpoint */
+    POST(url, init) {
+      return coreFetch(url, { ...init, method: "POST" });
+    },
+    /** Call a DELETE endpoint */
+    DELETE(url, init) {
+      return coreFetch(url, { ...init, method: "DELETE" });
+    },
+    /** Call a OPTIONS endpoint */
+    OPTIONS(url, init) {
+      return coreFetch(url, { ...init, method: "OPTIONS" });
+    },
+    /** Call a HEAD endpoint */
+    HEAD(url, init) {
+      return coreFetch(url, { ...init, method: "HEAD" });
+    },
+    /** Call a PATCH endpoint */
+    PATCH(url, init) {
+      return coreFetch(url, { ...init, method: "PATCH" });
+    },
+    /** Call a TRACE endpoint */
+    TRACE(url, init) {
+      return coreFetch(url, { ...init, method: "TRACE" });
+    },
+    /** Register middleware */
+    use(...middleware) {
+      for (const m of middleware) {
+        if (!m) {
+          continue;
+        }
+        if (typeof m !== "object" || !("onRequest" in m || "onResponse" in m || "onError" in m)) {
+          throw new Error("Middleware must be an object with one of `onRequest()`, `onResponse() or `onError()`");
+        }
+        middlewares.push(m);
+      }
+    },
+    /** Unregister middleware */
+    eject(...middleware) {
+      for (const m of middleware) {
+        const i = middlewares.indexOf(m);
+        if (i !== -1) {
+          middlewares.splice(i, 1);
+        }
+      }
+    }
+  };
+}
+function serializePrimitiveParam(name, value, options) {
+  if (value === void 0 || value === null) {
+    return "";
+  }
+  if (typeof value === "object") {
+    throw new Error(
+      "Deeply-nested arrays/objects aren\u2019t supported. Provide your own `querySerializer()` to handle these."
+    );
+  }
+  return `${name}=${options?.allowReserved === true ? value : encodeURIComponent(value)}`;
+}
+function serializeObjectParam(name, value, options) {
+  if (!value || typeof value !== "object") {
+    return "";
+  }
+  const values = [];
+  const joiner = {
+    simple: ",",
+    label: ".",
+    matrix: ";"
+  }[options.style] || "&";
+  if (options.style !== "deepObject" && options.explode === false) {
+    for (const k in value) {
+      values.push(k, options.allowReserved === true ? value[k] : encodeURIComponent(value[k]));
+    }
+    const final2 = values.join(",");
+    switch (options.style) {
+      case "form": {
+        return `${name}=${final2}`;
+      }
+      case "label": {
+        return `.${final2}`;
+      }
+      case "matrix": {
+        return `;${name}=${final2}`;
+      }
+      default: {
+        return final2;
+      }
+    }
+  }
+  for (const k in value) {
+    const finalName = options.style === "deepObject" ? `${name}[${k}]` : k;
+    values.push(serializePrimitiveParam(finalName, value[k], options));
+  }
+  const final = values.join(joiner);
+  return options.style === "label" || options.style === "matrix" ? `${joiner}${final}` : final;
+}
+function serializeArrayParam(name, value, options) {
+  if (!Array.isArray(value)) {
+    return "";
+  }
+  if (options.explode === false) {
+    const joiner2 = { form: ",", spaceDelimited: "%20", pipeDelimited: "|" }[options.style] || ",";
+    const final = (options.allowReserved === true ? value : value.map((v) => encodeURIComponent(v))).join(joiner2);
+    switch (options.style) {
+      case "simple": {
+        return final;
+      }
+      case "label": {
+        return `.${final}`;
+      }
+      case "matrix": {
+        return `;${name}=${final}`;
+      }
+      // case "spaceDelimited":
+      // case "pipeDelimited":
+      default: {
+        return `${name}=${final}`;
+      }
+    }
+  }
+  const joiner = { simple: ",", label: ".", matrix: ";" }[options.style] || "&";
+  const values = [];
+  for (const v of value) {
+    if (options.style === "simple" || options.style === "label") {
+      values.push(options.allowReserved === true ? v : encodeURIComponent(v));
+    } else {
+      values.push(serializePrimitiveParam(name, v, options));
+    }
+  }
+  return options.style === "label" || options.style === "matrix" ? `${joiner}${values.join(joiner)}` : values.join(joiner);
+}
+function createQuerySerializer(options) {
+  return function querySerializer(queryParams) {
+    const search = [];
+    if (queryParams && typeof queryParams === "object") {
+      for (const name in queryParams) {
+        const value = queryParams[name];
+        if (value === void 0 || value === null) {
+          continue;
+        }
+        if (Array.isArray(value)) {
+          if (value.length === 0) {
+            continue;
+          }
+          search.push(
+            serializeArrayParam(name, value, {
+              style: "form",
+              explode: true,
+              ...options?.array,
+              allowReserved: options?.allowReserved || false
+            })
+          );
+          continue;
+        }
+        if (typeof value === "object") {
+          search.push(
+            serializeObjectParam(name, value, {
+              style: "deepObject",
+              explode: true,
+              ...options?.object,
+              allowReserved: options?.allowReserved || false
+            })
+          );
+          continue;
+        }
+        search.push(serializePrimitiveParam(name, value, options));
+      }
+    }
+    return search.join("&");
+  };
+}
+function defaultPathSerializer(pathname, pathParams) {
+  let nextURL = pathname;
+  for (const match of pathname.match(PATH_PARAM_RE) ?? []) {
+    let name = match.substring(1, match.length - 1);
+    let explode = false;
+    let style = "simple";
+    if (name.endsWith("*")) {
+      explode = true;
+      name = name.substring(0, name.length - 1);
+    }
+    if (name.startsWith(".")) {
+      style = "label";
+      name = name.substring(1);
+    } else if (name.startsWith(";")) {
+      style = "matrix";
+      name = name.substring(1);
+    }
+    if (!pathParams || pathParams[name] === void 0 || pathParams[name] === null) {
+      continue;
+    }
+    const value = pathParams[name];
+    if (Array.isArray(value)) {
+      nextURL = nextURL.replace(match, serializeArrayParam(name, value, { style, explode }));
+      continue;
+    }
+    if (typeof value === "object") {
+      nextURL = nextURL.replace(match, serializeObjectParam(name, value, { style, explode }));
+      continue;
+    }
+    if (style === "matrix") {
+      nextURL = nextURL.replace(match, `;${serializePrimitiveParam(name, value)}`);
+      continue;
+    }
+    nextURL = nextURL.replace(match, style === "label" ? `.${encodeURIComponent(value)}` : encodeURIComponent(value));
+  }
+  return nextURL;
+}
+function defaultBodySerializer(body) {
+  if (body instanceof FormData) {
+    return body;
+  }
+  return JSON.stringify(body);
+}
+function createFinalURL(pathname, options) {
+  let finalURL = `${options.baseUrl}${pathname}`;
+  if (options.params?.path) {
+    finalURL = defaultPathSerializer(finalURL, options.params.path);
+  }
+  let search = options.querySerializer(options.params.query ?? {});
+  if (search.startsWith("?")) {
+    search = search.substring(1);
+  }
+  if (search) {
+    finalURL += `?${search}`;
+  }
+  return finalURL;
+}
+function mergeHeaders(...allHeaders) {
+  const finalHeaders = new Headers();
+  for (const h of allHeaders) {
+    if (!h || typeof h !== "object") {
+      continue;
+    }
+    const iterator = h instanceof Headers ? h.entries() : Object.entries(h);
+    for (const [k, v] of iterator) {
+      if (v === null) {
+        finalHeaders.delete(k);
+      } else if (Array.isArray(v)) {
+        for (const v2 of v) {
+          finalHeaders.append(k, v2);
+        }
+      } else if (v !== void 0) {
+        finalHeaders.set(k, v);
+      }
+    }
+  }
+  return finalHeaders;
+}
+function removeTrailingSlash(url) {
+  if (url.endsWith("/")) {
+    return url.substring(0, url.length - 1);
+  }
+  return url;
+}
+
+// src/action.ts
 var waitTimeSeconds = Number.parseInt((0, import_core.getInput)("wait", { required: false }));
 var apiKey = (0, import_core.getInput)("api-key", { required: true });
 var coolifyUrl = (0, import_core.getInput)("coolify-url", { required: false });
+var baseUrl = new URL("/api/v1", coolifyUrl).toString();
+var coolifyClient = createClient({
+  baseUrl,
+  headers: {
+    Authorization: `Bearer ${apiKey}`,
+    "Content-Type": "application/json"
+  }
+});
 var tag = (0, import_core.getInput)("tag", { required: false });
 if (tag === "") {
   tag = void 0;
@@ -19867,58 +20312,35 @@ var uuid = (0, import_core.getInput)("uuid", { required: false });
 if (uuid === "") {
   uuid = void 0;
 }
-var force = (0, import_core.getInput)("force", { required: false });
-if (force === "") {
-  force = "false";
-}
+var force = (0, import_core.getInput)("force", { required: false }) === "true";
 if (!tag && !uuid) {
   (0, import_core.setFailed)("Either tag or uuid must be provided");
   process.exit(1);
 }
-var deployPath = `${coolifyUrl}/api/v1/deploy`;
-var deploymentPath = (uuid2) => `${coolifyUrl}/api/v1/deployments/${uuid2}`;
 var deploy = async () => {
   if (tag) (0, import_core.debug)(`Deploying tag: ${tag}`);
   if (uuid) (0, import_core.debug)(`Deploying uuid: ${uuid}`);
-  const searchParams = new URLSearchParams({
-    ...tag ? { tag } : {},
-    ...uuid ? { uuid } : {},
-    force
+  const result = await coolifyClient.GET("/deploy", {
+    params: { query: { tag, uuid, force } }
   });
-  const url = `${deployPath}?${searchParams.toString()}`;
-  const result = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
-    }
-  });
-  if (!result.ok) {
-    (0, import_core.setFailed)(`Failed to deploy (${result.status}): ${result.statusText}`);
+  if (!result.data) {
+    (0, import_core.setFailed)(`Failed to deploy: ${result.error.message}`);
     process.exit(1);
   }
-  const response = await result.json();
-  if (Array.isArray(response.message) && response.message.length > 0) {
-    (0, import_core.debug)(response.message.join("\n"));
-  }
-  return response.details;
+  (0, import_core.debug)(JSON.stringify(result.data));
+  return result.data.deployments ?? [];
 };
 var getDeploymentStatus = async (uuid2) => {
-  const result = await fetch(deploymentPath(uuid2), {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
-    }
+  const result = await coolifyClient.GET("/deployments/{uuid}", {
+    params: { path: { uuid: uuid2 } }
   });
-  if (!result.ok) {
+  if (!result.data) {
     (0, import_core.setFailed)(
-      `Failed to get deployment status for deployment '${uuid2}' (${result.status}): ${result.statusText}`
+      `Failed to get deployment status for deployment '${uuid2}': ${result.error.message}`
     );
     process.exit(1);
   }
-  const response = await result.json();
-  return response;
+  return result.data;
 };
 void (async () => {
   const deployments = await deploy();
@@ -19935,7 +20357,7 @@ void (async () => {
       (0, import_core.setFailed)("Timeout reached");
       process.exit(1);
     }
-    for (const uuid2 of deploymentUUIDs.filter(
+    for (const uuid2 of Object.keys(status).filter(
       (uuid3) => status[uuid3] !== "finished" && status[uuid3] !== "failed"
     )) {
       const nextStatus = await getDeploymentStatus(uuid2);
@@ -19943,7 +20365,7 @@ void (async () => {
         (0, import_core.info)(
           `Deployment ${nextStatus.application_name} (${uuid2}) status: ${nextStatus.status}`
         );
-        status[uuid2] = nextStatus.status;
+        status[uuid2] = nextStatus.status ?? "queued";
       }
       if (status[uuid2] === "failed") {
         (0, import_core.setFailed)(`Deployment ${uuid2} failed`);
